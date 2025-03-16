@@ -12,7 +12,7 @@ $(document).ready(function () {
         effect: "bounceOut",
       },
     });
-  
+  //adding sirimessage "Ask me anything"
     $(".siri-message").textillate({
       loop: true,
       sync: true,
@@ -25,7 +25,7 @@ $(document).ready(function () {
         sync: true,
       },
     });
-  
+  //adding siriWave
     var siriWave = new SiriWave({
       container: document.getElementById("siri-container"),
       width: 940,
@@ -39,9 +39,9 @@ $(document).ready(function () {
       rippleEffect: true,
       rippleColor: "#ffffff",
     });
-  
+    //for showing the wave after clicking on the mic button
     $("#MicBtn").click(function () {
-      eel.play_assistant_sound();
+      eel.play_assistant_sound(); //use for the sound after clicking on the mic button
       $("#Oval").attr("hidden", true);
       $("#SiriWave").attr("hidden", false);
   
