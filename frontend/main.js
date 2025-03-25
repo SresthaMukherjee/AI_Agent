@@ -12,6 +12,29 @@ $(document).ready(function () {
         effect: "bounceOut",
       },
     });
+    $(document).ready(function () {
+    // Ensure eel is defined before calling
+    if (typeof eel !== "undefined" && eel.init) {
+        eel.init();
+    }
+
+    $(".text").textillate({
+        loop: true,
+        minDisplayTime: 2000,
+        initialDelay: 500,
+        in: {
+            effect: "bounceIn",
+            delayScale: 1.5,
+            delay: 50,
+        },
+        out: {
+            effect: "bounceOut",
+            delayScale: 1.5,
+            delay: 50,
+        },
+    });
+});
+
   
     $(".siri-message").textillate({
       loop: true,
@@ -26,20 +49,30 @@ $(document).ready(function () {
       },
     });
   
+    // var siriWave = new SiriWave({
+    //   container: document.getElementById("siri-container"),
+    //   width: 940,
+    //   style: "ios9",
+    //   amplitude: "1",
+    //   speed: "0.30",
+    //   height: 200,
+    //   autostart: true,
+    //   waveColor: "#ff0000",
+    //   waveOffset: 0,
+    //   rippleEffect: true,
+    //   rippleColor: "#ffffff",
+    // });
+   
     var siriWave = new SiriWave({
       container: document.getElementById("siri-container"),
       width: 940,
-      style: "ios9",
-      amplitude: "1",
-      speed: "0.30",
       height: 200,
+      style: "ios9",
+      amplitude: 1,  // Removed quotes
+      speed: 0.30,    // Removed quotes
       autostart: true,
-      waveColor: "#ff0000",
-      waveOffset: 0,
-      rippleEffect: true,
-      rippleColor: "#ffffff",
-    });
-  
+      waveColor: "#ff0000"
+  });
     $("#MicBtn").click(function () {
       eel.play_assistant_sound();
       $("#Oval").attr("hidden", true);
