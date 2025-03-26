@@ -1,0 +1,14 @@
+# Ignore the envSherlock directory
+/envsherlock/
+
+# Ignore contact.csv
+contacts.csv
+
+# Ignore sherlock.db
+sherlock.db
+
+# Ignore Python bytecode files in backend
+/backend/__pycache__/ 
+
+# Ignore backend cookie.json
+/backend/cookie.json
