@@ -39,11 +39,10 @@ $(document).ready(function () {
     rippleColor:"#ffffff",
   });
 
-
-
-$("#MicBtn").click(function(){
-  eel.playAssistantSound()
-  $("#Oval").attr("hidden",true);
-  $("#SiriWave").attr("hidden",false);
-});
+  $("#MicBtn").click(function () {
+    window.eel?.playAssistantSound();
+    $("#Oval").hide();
+    $("#SiriWave").show();
+    window.eel?.takeAllCommands()();
+  }); 
 });
