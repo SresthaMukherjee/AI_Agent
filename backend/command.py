@@ -1,3 +1,4 @@
+import time
 import pyttsx3
 import speech_recognition as sr
 import eel
@@ -7,9 +8,8 @@ def speak(text):
     engine = pyttsx3.init('sapi5')
     voices = engine.getProperty('voices')
     # print(voices)
-    engine.setProperty('voice', voices[0
-    
-    ].id)
+    engine.setProperty('voice', voices[0].id)
+    eel.DisplayMessage(text)
     engine.say(text)
     engine.runAndWait()
     engine.setProperty('rate', 174)
@@ -30,7 +30,7 @@ def takecommand():
         print(f"User said: {query}\n")
         eel.DisplayMessage(query)
         speak(query)
-        eel.ShowHood()
+        
     except Exception as e:
         print(f"Error: {str(e)}\n")
         return None
@@ -41,16 +41,14 @@ def takeAllCommands(message=None):
         query = takecommand() 
         print(query)
         if "open" in query:
-             print("i am opening...")
+             from backend.feature import openCommand
+             openCommand(query)
+        elif "youtube" in query:
+             from backend.feature import playYoutube
+             playYoutube(query)
         else:
-            print("i am not sure what to do...")   
+            print("I am not sure what to do...")   
 
-
-
-
-
-
-
-
-# text1 =takecommand()
-# speak(text1) #return twice
+#text1 =takecommand()
+#speak(text1) #return twice
+        eel.ShowHood()
