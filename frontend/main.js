@@ -45,4 +45,15 @@ $(document).ready(function () {
     $("#SiriWave").show();
     window.eel?.takeAllCommands()();
   }); 
+
+  function doc_keyUp(e){
+    //this would test for whichever key is 40
+    if(e.key==='j' && e.metaKey){
+      eel.playAssistantSound()
+      $("#Oval").hide();
+      $("#SiriWave").show();
+      eel.takeAllCommands()()
+    }
+  }
+document.addEventListener('keyup',doc_keyUp,false);
 });
