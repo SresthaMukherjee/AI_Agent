@@ -45,4 +45,27 @@ $(document).ready(function () {
     $("#SiriWave").show();
     window.eel?.takeAllCommands()();
   }); 
+
+  // function doc_keyUp(e) {
+  //   // this would test for whichever key is 40 (down arrow) and the ctrl key at the same time
+
+  //   if (e.key === "j" && e.metaKey) {
+  //     eel.play_assistant_sound();
+  //     $("#Oval").attr("hidden", true);
+  //     $("#SiriWave").attr("hidden", false);
+  //     eel.takeAllCommands()();
+  //   }
+  // }
+  // document.addEventListener("keyup", doc_keyUp, false);
+  function doc_keyUp(e) {
+    if (e.key === "j" && (e.ctrlKey || e.metaKey)) { // Support both Ctrl (Windows/Linux) and Cmd (Mac)
+        window.eel?.playAssistantSound();
+        $("#Oval").hide();
+        $("#SiriWave").show();
+        window.eel?.takeAllCommands();
+    }
+}
+document.addEventListener("keyup", doc_keyUp, false);
+
+
 });

@@ -1,4 +1,3 @@
-import time
 import pyttsx3
 import speech_recognition as sr
 import eel
@@ -38,16 +37,19 @@ def takecommand():
     return query.lower()
 @eel.expose
 def takeAllCommands(message=None):
-        query = takecommand() 
-        print(query)
-        if "open" in query:
-             from backend.feature import openCommand
-             openCommand(query)
-        elif "youtube" in query:
-             from backend.feature import playYoutube
-             playYoutube(query)
-        else:
-            print("I am not sure what to do...")   
+        try:
+            query = takecommand() 
+            print(query)
+            if "open" in query:
+                from backend.feature import openCommand
+                openCommand(query)
+            elif "youtube" in query:
+                from backend.feature import playYoutube
+                playYoutube(query)
+            else:
+                print("I am not sure what to do...")   
+        except:
+            print("An error occurred...")
 
 #text1 =takecommand()
 #speak(text1) #return twice

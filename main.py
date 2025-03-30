@@ -3,12 +3,13 @@ import eel
 from backend.feature import *
 from backend.command import *
 
-eel.init("frontend")
-os.system('start msedge.exe --app="http://localhost:8000/index.html"')
+def start():
+    eel.init("frontend")
+    os.system('start msedge.exe --app="http://localhost:8000/index.html"')
 
-playAssistantSound()
+    playAssistantSound()
 
-eel.start("index.html",mode=None,host="localhost",block=True)
+    eel.start("index.html",mode=None,host="localhost",block=True)
 
 
 
