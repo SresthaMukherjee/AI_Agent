@@ -43,9 +43,46 @@ def takeAllCommands(message=None):
             if "open" in query:
                 from backend.feature import openCommand
                 openCommand(query)
+            
+            elif "send message" in query or "call" in query or "video call" in query:
+                print("hello")
+                from backend.feature import findContact, whatsApp
+                flag=""
+                Phone, name = findContact(query)
+                if(Phone!=0):
+                    # speak("Which mode you want to use whatsapp or mobile")
+                    # preferance=takecommand()
+                    # print(preferance)
+                    if "send message" in query:
+                        #if "send message" in query or "send sms" in query:
+                        flag= 'message'
+                        speak("what message to send")
+                        query = takecommand()
+                            #sendMessage (message, Phone, name)
+                    elif "call" in query: 
+                        flag='call'
+                             #makeCall (name, Phone)
+                    else:
+                           # speak("please try again")
+                        flag='video call'
+                    whatsApp(Phone,query,flag,name)
+                    # elif "whatsapp" in preferance:
+                    #     message=""
+                    #     if "send message" in query:
+                    #         message = 'message'
+                    #         speak("what message to send")
+                    #         query=takecommand()
+
+                    #     elif "phone call" in query:
+                    #         message = 'call'
+                    #     else:
+                    #         message = 'video call'
+
+                    #whatsApp(Phone, query, message, name)
             elif "youtube" in query:
                 from backend.feature import playYoutube
                 playYoutube(query)
+            
             else:
                 print("I am not sure what to do...")   
         except:
@@ -53,4 +90,50 @@ def takeAllCommands(message=None):
 
 #text1 =takecommand()
 #speak(text1) #return twice
-        eel.ShowHood()
+        eel.ShowHood() 
+
+# @eel.expose
+# def takeAllCommands(message=None):
+#     if message is None:
+#         query = takecommand()  # If no message is passed, listen for voice input
+#         if not query:
+#             return  # Exit if no query is received
+#         print(query)
+#         eel.senderText(query)
+#     else:
+#         query = message  # If there's a message, use it
+#         print(f"Message received: {query}")
+#         eel.senderText(query)
+    
+#     try:
+#         if query:
+#             if "open" in query:
+#                 from backend.feature import openCommand
+#                 openCommand(query)
+#             elif "send message" in query or "call" in query or "video call" in query:
+#                 from backend.feature import findContact, whatsApp
+#                 flag = ""
+#                 Phone, name = findContact(query)
+#                 if Phone != 0:
+#                     if "send message" in query:
+#                         flag = 'message'
+#                         speak("What message to send?")
+#                         query = takecommand()  # Ask for the message text
+#                     elif "call" in query:
+#                         flag = 'call'
+#                     else:
+#                         flag = 'video call'
+#                     whatsApp(Phone, query, flag, name)
+#             elif "on youtube" in query:
+#                 from backend.feature import PlayYoutube
+#                 PlayYoutube(query)
+#             else:
+#                 from backend.feature import chatBot
+#                 chatBot(query)
+#         else:
+#             speak("No command was given.")
+#     except Exception as e:
+#         print(f"An error occurred: {e}")
+#         speak("Sorry, something went wrong.")
+    
+#     eel.ShowHood()

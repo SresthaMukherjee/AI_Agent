@@ -1,5 +1,4 @@
-db.py
-
+import csv
 import sqlite3
 conn = sqlite3.connect("sherlock.db")
 cursor = conn.cursor()
@@ -13,7 +12,7 @@ cursor.execute(query)
 # cursor.execute(query)
 # conn.commit()
 
-# query = "INSERT INTO web_command VALUES (null,'instagram web', 'https://www.instagram.com/')"
+# query = "INSERT INTO web_command VALUES (null,'facebook web', 'https://www.facebook.com/')"
 # cursor.execute(query)
 # conn.commit()
 
@@ -21,8 +20,41 @@ cursor.execute(query)
 # cursor.execute(query)
 # conn.commit()
 
+query = "DELETE FROM contacts WHERE id BETWEEN 5 AND 9"
+cursor.execute(query)
+conn.commit()
+
  # testing module
 # app_name = "obs"
 # cursor.execute('SELECT path FROM sys_command WHERE name IN (?)', (app_name,))
+# results = cursor.fetchall()
+# print(results[0][0])
+# cursor.execute("DROP TABLE IF EXISTS contacts;")
+# conn.commit()
+
+
+
+# cursor.execute('''CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY, name VARCHAR(200), Phone VARCHAR(255), email VARCHAR(255) NULL)''') 
+# desired_columns_indices = [0, 18]
+# with open('contacts.csv', 'r', encoding='utf-8') as csvfile:
+#     csvreader = csv.reader(csvfile)
+#     for row in csvreader:
+#         selected_data = [row[i] for i in desired_columns_indices]
+#         cursor.execute(''' INSERT INTO contacts (id, 'name', 'Phone') VALUES (null, ?,? );''', tuple(selected_data))
+
+# # Commit changes and close connection
+# conn.commit()
+# conn.close()
+# print("data inserted successfully...")
+
+# query = "INSERT INTO contacts VALUES (null,'rohan', '9876543210', 'null')"
+# cursor.execute(query)
+# conn.commit() 
+
+# query = 'Rohan'
+# query = query.strip().lower()  
+
+# cursor.execute("SELECT Phone FROM contacts WHERE LOWER(name) LIKE ? OR LOWER(name) LIKE ?", 
+#                ('%' + query + '%', query + '%'))
 # results = cursor.fetchall()
 # print(results[0][0])
