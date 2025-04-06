@@ -1,0 +1,9 @@
+pyobjc
+pyttsx3
+SpeechRecognition
+pyaudio
+eel
+playsound==1.2.2
+pygame
+pywhatkit
+pvporcupine==1.9.5
