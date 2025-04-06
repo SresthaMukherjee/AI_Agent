@@ -25,7 +25,7 @@ pygame.mixer.init()
 @eel.expose
 
 def playAssistantSound ():
-    sound_file = r"C:\Users\sukan\AI_Agent\frontend\assets\audio\frontend_assets_audio_start_sound.mp3"
+    sound_file = r"frontend\\assets\\audio\\frontend_assets_audio_start_sound.mp3"
     pygame.mixer.music.load(sound_file)
     pygame.mixer.music.play()
 
