@@ -1,71 +1,137 @@
-$(document).ready(function () {    
-    $(".text").textillate({
-      loop: true,
-      speed: 1500,
-      sync: true,
-      in: {
-        effect: "bounceIn",
-      },
-      out: {
-        effect: "bounceOut",
-      },
-    });
+// $(document).ready(function () {    
+//     $(".text").textillate({
+//       loop: true,
+//       speed: 1500,
+//       sync: true,
+//       in: {
+//         effect: "bounceIn",
+//       },
+//       out: {
+//         effect: "bounceOut",
+//       },
+//     });
 
-    $(".siri-message").textillate({
-      loop: true,
-      speed: 1500,
-      sync: true,
-      in: {
-        effect: "fadeInUp",
-        sync:true,
-      },
-      out: {
-        effect: "fadeOutUp",
-        sync:true,
-      },
-    });
+//     $(".siri-message").textillate({
+//       loop: true,
+//       speed: 1500,
+//       sync: true,
+//       in: {
+//         effect: "fadeInUp",
+//         sync:true,
+//       },
+//       out: {
+//         effect: "fadeOutUp",
+//         sync:true,
+//       },
+//     });
     
+//   var siriWave = new SiriWave({
+//     container: document.getElementById("siri-container"),
+//     width: 940,
+//     style:"ios9",
+//     amplitude:"1",
+//     speed:"0.30",
+//     height:200,
+//     autostart:true,
+//     waveColor:'#ff0000',
+//     waveOffset:0,
+//     rippleEffect:true,
+//     rippleColor:"#ffffff",
+//   });
+
+//   $("#MicBtn").click(function () {
+//     window.eel?.playAssistantSound();
+//     $("#Oval").hide();
+//     $("#SiriWave").show();
+//     window.eel?.takeAllCommands()();
+//   }); 
+
+//   // function doc_keyUp(e) {
+//   //   // this would test for whichever key is 40 (down arrow) and the ctrl key at the same time
+
+//   //   if (e.key === "j" && e.metaKey) {
+//   //     eel.play_assistant_sound();
+//   //     $("#Oval").attr("hidden", true);
+//   //     $("#SiriWave").attr("hidden", false);
+//   //     eel.takeAllCommands()();
+//   //   }
+//   // }
+//   // document.addEventListener("keyup", doc_keyUp, false);
+//   function doc_keyUp(e) {
+//     if (e.key === "j" && (e.ctrlKey || e.metaKey)) { // Support both Ctrl (Windows/Linux) and Cmd (Mac)
+//         window.eel?.playAssistantSound();
+//         $("#Oval").hide();
+//         $("#SiriWave").show();
+//         window.eel?.takeAllCommands();
+//     }
+// }
+// document.addEventListener("keyup", doc_keyUp, false);
+
+
+// });
+
+$(document).ready(function () {
+  $(".text").textillate({
+    loop: true,
+    speed: 1500,
+    sync: true,
+    in: {
+      effect: "bounceIn",
+    },
+    out: {
+      effect: "bounceOut",
+    },
+  });
+
+  $(".siri-message").textillate({
+    loop: true,
+    speed: 1500,
+    sync: true,
+    in: {
+      effect: "fadeInUp",
+      sync: true,
+    },
+    out: {
+      effect: "fadeOutUp",
+      sync: true,
+    },
+  });
+
   var siriWave = new SiriWave({
     container: document.getElementById("siri-container"),
     width: 940,
-    style:"ios9",
-    amplitude:"1",
-    speed:"0.30",
-    height:200,
-    autostart:true,
-    waveColor:'#ff0000',
-    waveOffset:0,
-    rippleEffect:true,
-    rippleColor:"#ffffff",
+    style: "ios9",
+    amplitude: "1",
+    speed: "0.30",
+    height: 200,
+    autostart: true,
+    waveColor: '#ff0000',
+    waveOffset: 0,
+    rippleEffect: true,
+    rippleColor: "#ffffff",
   });
 
   $("#MicBtn").click(function () {
     window.eel?.playAssistantSound();
     $("#Oval").hide();
     $("#SiriWave").show();
-    window.eel?.takeAllCommands()();
-  }); 
+    window.eel?.takeAllCommands();
+  });
 
-  // function doc_keyUp(e) {
-  //   // this would test for whichever key is 40 (down arrow) and the ctrl key at the same time
-
-  //   if (e.key === "j" && e.metaKey) {
-  //     eel.play_assistant_sound();
-  //     $("#Oval").attr("hidden", true);
-  //     $("#SiriWave").attr("hidden", false);
-  //     eel.takeAllCommands()();
-  //   }
-  // }
-  // document.addEventListener("keyup", doc_keyUp, false);
   function doc_keyUp(e) {
-    if (e.key === "j" && (e.ctrlKey || e.metaKey)) { // Support both Ctrl (Windows/Linux) and Cmd (Mac)
-        window.eel?.playAssistantSound();
-        $("#Oval").hide();
-        $("#SiriWave").show();
-        window.eel?.takeAllCommands();
+    if (e.key === "j" && (e.ctrlKey || e.metaKey)) {
+      window.eel?.playAssistantSound();
+      $("#Oval").hide();
+      $("#SiriWave").show();
+      window.eel?.takeAllCommands();
     }
-}
-document.addEventListener("keyup", doc_keyUp, false);
+  }
+  document.addEventListener("keyup", doc_keyUp, false);
 
-
+  // ✅ Expose senderText so Python can call it
+  eel.expose(senderText);
+  function senderText(message) {
+    console.log("Received from Python:", message);
+    $("#messageBox").text(message);  // Make sure you have <div id="messageBox"></div> in your HTML
+  }
 });

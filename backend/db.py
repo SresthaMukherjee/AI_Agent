@@ -20,9 +20,9 @@ cursor.execute(query)
 # cursor.execute(query)
 # conn.commit()
 
-query = "DELETE FROM contacts WHERE id BETWEEN 5 AND 9"
-cursor.execute(query)
-conn.commit()
+# query = "DELETE FROM contacts WHERE id BETWEEN 5 AND 9"
+# cursor.execute(query)
+# conn.commit()
 
  # testing module
 # app_name = "obs"

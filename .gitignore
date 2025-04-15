@@ -12,3 +12,6 @@ sherlock.db
 
 # Ignore backend cookie.json
 /backend/cookie.json
+
+
+.vscode/

@@ -1,6 +1,5 @@
 {
-    "python.pythonPath": "venv/bin/python3",
-    "python.defaultInterpreterPath": "venv/bin/python3",
-    "python.terminal.activateEnvironment": true
-  }
-  
+  "python.pythonPath": "${workspaceFolder}/envsherlock/bin/python",
+  "python.defaultInterpreterPath": "${workspaceFolder}/envsherlock/bin/python",
+  "python.terminal.activateEnvironment": true
+}
