@@ -90,6 +90,7 @@
       </section>
     </div>
 
+    <!-- Listening Mode UI -->
     <div id="SiriWave" class="mb-4" style="display: none">
       <div class="container">
         <div class="row">
@@ -142,5 +143,31 @@
     <!-- Custom Scripts -->
     <script src="main.js"></script>
     <script src="controller.js"></script>
+
+    <!-- Listening Mode Script -->
+    <script>
+      $(document).ready(function () {
+        // Show Listening Mode UI when mic button is clicked
+        $("#MicBtn").click(function () {
+          eel.ShowListening(); // Show SiriWave animation
+        });
+
+        // Expose the ShowListening function from Python backend
+        eel.expose(ShowListening);
+        function ShowListening() {
+          $("#Oval").hide();         // Hide idle visual
+          $("#SiriWave").show();     // Show wave animation
+          eel.DisplayMessage("I'm listening...");  // Optional visual feedback
+        }
+
+        eel.expose(ShowHood);
+        function ShowHood() {
+          setTimeout(() => {
+            $("#Oval").show();         // Hide wave animation
+            $("#SiriWave").hide();     // Show idle state
+          }, 500);
+        }
+      });
+    </script>
   </body>
 </html>

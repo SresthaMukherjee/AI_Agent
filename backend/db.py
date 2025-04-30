@@ -20,7 +20,7 @@ cursor.execute(query)
 # cursor.execute(query)
 # conn.commit()
 
-# query = "DELETE FROM contacts WHERE id BETWEEN 5 AND 9"
+# query = "DELETE FROM contacts WHERE id BETWEEN 1 AND 4"
 # cursor.execute(query)
 # conn.commit()
 
@@ -47,7 +47,7 @@ cursor.execute(query)
 # conn.close()
 # print("data inserted successfully...")
 
-# query = "INSERT INTO contacts VALUES (null,'rohan', '9876543210', 'null')"
+# query = "INSERT INTO contacts VALUES (null,'Tripti', '6289605990', 'null')"
 # cursor.execute(query)
 # conn.commit() 
 
