@@ -61,7 +61,7 @@ def takeAllCommands(message=None):
             return
 
         print(f"Processing: {query}")
-        eel.senderText(query)
+        #eel.senderText(query)
 
         if "open" in query:
             from backend.feature import openCommand
