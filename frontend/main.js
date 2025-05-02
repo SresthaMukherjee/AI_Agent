@@ -1,76 +1,5 @@
-// $(document).ready(function () {    
-//     $(".text").textillate({
-//       loop: true,
-//       speed: 1500,
-//       sync: true,
-//       in: {
-//         effect: "bounceIn",
-//       },
-//       out: {
-//         effect: "bounceOut",
-//       },
-//     });
-
-//     $(".siri-message").textillate({
-//       loop: true,
-//       speed: 1500,
-//       sync: true,
-//       in: {
-//         effect: "fadeInUp",
-//         sync:true,
-//       },
-//       out: {
-//         effect: "fadeOutUp",
-//         sync:true,
-//       },
-//     });
-    
-//   var siriWave = new SiriWave({
-//     container: document.getElementById("siri-container"),
-//     width: 940,
-//     style:"ios9",
-//     amplitude:"1",
-//     speed:"0.30",
-//     height:200,
-//     autostart:true,
-//     waveColor:'#ff0000',
-//     waveOffset:0,
-//     rippleEffect:true,
-//     rippleColor:"#ffffff",
-//   });
-
-//   $("#MicBtn").click(function () {
-//     window.eel?.playAssistantSound();
-//     $("#Oval").hide();
-//     $("#SiriWave").show();
-//     window.eel?.takeAllCommands()();
-//   }); 
-
-//   // function doc_keyUp(e) {
-//   //   // this would test for whichever key is 40 (down arrow) and the ctrl key at the same time
-
-//   //   if (e.key === "j" && e.metaKey) {
-//   //     eel.play_assistant_sound();
-//   //     $("#Oval").attr("hidden", true);
-//   //     $("#SiriWave").attr("hidden", false);
-//   //     eel.takeAllCommands()();
-//   //   }
-//   // }
-//   // document.addEventListener("keyup", doc_keyUp, false);
-//   function doc_keyUp(e) {
-//     if (e.key === "j" && (e.ctrlKey || e.metaKey)) { // Support both Ctrl (Windows/Linux) and Cmd (Mac)
-//         window.eel?.playAssistantSound();
-//         $("#Oval").hide();
-//         $("#SiriWave").show();
-//         window.eel?.takeAllCommands();
-//     }
-// }
-// document.addEventListener("keyup", doc_keyUp, false);
-
-
-// });
-
 $(document).ready(function () {
+  // Animate header text
   $(".text").textillate({
     loop: true,
     speed: 1500,
@@ -83,6 +12,7 @@ $(document).ready(function () {
     },
   });
 
+  // Animate Siri message text
   $(".siri-message").textillate({
     loop: true,
     speed: 1500,
@@ -97,6 +27,7 @@ $(document).ready(function () {
     },
   });
 
+  // SiriWave configuration
   var siriWave = new SiriWave({
     container: document.getElementById("siri-container"),
     width: 940,
@@ -105,33 +36,81 @@ $(document).ready(function () {
     speed: "0.30",
     height: 200,
     autostart: true,
-    waveColor: '#ff0000',
+    waveColor: "#ff0000",
     waveOffset: 0,
     rippleEffect: true,
     rippleColor: "#ffffff",
   });
 
+  // Mic button click
   $("#MicBtn").click(function () {
     window.eel?.playAssistantSound();
     $("#Oval").hide();
     $("#SiriWave").show();
-    window.eel?.takeAllCommands();
+    window.eel?.takeAllCommands()();
   });
 
+  // Cmd + J toggle SiriWave
   function doc_keyUp(e) {
-    if (e.key === "j" && (e.ctrlKey || e.metaKey)) {
-      window.eel?.playAssistantSound();
-      $("#Oval").hide();
-      $("#SiriWave").show();
-      window.eel?.takeAllCommands();
+    if (e.key === "j" && e.metaKey) {
+      const isSiriWaveVisible = $("#SiriWave").is(":visible");
+
+      if (isSiriWaveVisible) {
+        $("#SiriWave").hide();
+        $("#Oval").show();
+      } else {
+        window.eel?.playAssistantSound();
+        $("#Oval").hide();
+        $("#SiriWave").show();
+        window.eel?.takeAllCommands();
+      }
     }
   }
   document.addEventListener("keyup", doc_keyUp, false);
 
-  // ✅ Expose senderText so Python can call it
-  eel.expose(senderText);
-  function senderText(message) {
-    console.log("Received from Python:", message);
-    $("#messageBox").text(message);  // Make sure you have <div id="messageBox"></div> in your HTML
+  // Play assistant with message
+  function PlayAssistant(message) {
+    if (message !== "") {
+      $("#Oval").hide();
+      $("#SiriWave").show();
+      eel.takeAllCommands(message);
+      $("#chatbox").val("");
+      $("#MicBtn").show();
+      $("#SendBtn").hide();
+    } else {
+      console.log("Empty message, nothing sent.");
+    }
   }
+
+  // Toggle mic/send buttons based on input
+  function ShowHideButton(message) {
+    if (message.length === 0) {
+      $("#MicBtn").show();
+      $("#SendBtn").hide();
+    } else {
+      $("#MicBtn").hide();
+      $("#SendBtn").show();
+    }
+  }
+
+  // Input tracking
+  $("#chatbox").keyup(function () {
+    let message = $("#chatbox").val();
+    console.log("Current chatbox input: ", message);
+    ShowHideButton(message);
+  });
+
+  // Send message with Send button
+  $("#SendBtn").click(function () {
+    let message = $("#chatbox").val();
+    PlayAssistant(message);
+  });
+
+  // Send message on Enter key
+  $("#chatbox").keypress(function (e) {
+    if (e.which === 13) {
+      let message = $("#chatbox").val();
+      PlayAssistant(message);
+    }
+  });
 });

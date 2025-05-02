@@ -13,7 +13,7 @@ import pyautogui
 import pywhatkit as kit
 import pygame
 import sqlite3
-
+import pyperclip
 from backend.command import speak
 from backend.config import ASSISTANT_NAME
 from backend.helper import extract_yt_term, remove_words
@@ -27,7 +27,7 @@ pygame.mixer.init()
 
 @eel.expose
 def playAssistantSound():
-    sound_file = r"/Users/sresthamukherjee/AI_Agent/frontend/assets/audio/frontend_assets_audio_start_sound.mp3"
+    sound_file = r"/Users/HP/AI_Agent/frontend/assets/audio/frontend_assets_audio_start_sound.mp3"
     pygame.mixer.music.load(sound_file)
     pygame.mixer.music.play()
 
@@ -136,32 +136,90 @@ def findContact(query):
         return 0, 0
 
 def whatsApp(Phone, message, flag, name):
-    target_tab = {"message": 12, "call": 7, "video": 6}.get(flag, 6)
-    jarvis_message = {
-        "message": f"Message sent successfully to {name}",
-        "call": f"Calling {name}",
-        "video": f"Starting video call with {name}"
-    }.get(flag, f"Interacting with {name}")
-
-    encoded_message = quote(message)
-    whatsapp_url = f"whatsapp://send?phone={Phone}&text={encoded_message}"
-
+    system_platform = platform.system()
+    
     try:
-        if platform.system() == "Windows":
-            full_command = f'start "" "{whatsapp_url}"'
-            subprocess.run(full_command, shell=True)
-            time.sleep(5)
-            subprocess.run(full_command, shell=True)
-        elif platform.system() == "Darwin":
-            subprocess.run(["open", whatsapp_url])
-        else:
-            subprocess.run(["xdg-open", whatsapp_url])
+        if system_platform == "Windows":
+            # Open WhatsApp UWP Desktop
+            subprocess.Popen([
+                "explorer.exe",
+                "shell:AppsFolder\\5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App"
+            ])
+            time.sleep(7)
 
-        pyautogui.hotkey('ctrl', 'f')
-        for _ in range(1, target_tab):
-            pyautogui.hotkey('tab')
-        pyautogui.hotkey('enter')
-        speak(jarvis_message)
+            # Focus search bar
+            pyautogui.hotkey('ctrl', 'f')
+            time.sleep(1)
+
+            # Paste contact name
+            pyperclip.copy(name)
+            pyautogui.hotkey('ctrl', 'v')
+            time.sleep(2)
+
+            # Click on first result — Adjust coordinates as needed
+            pyautogui.click(x=250, y=260)
+            time.sleep(2)
+
+            if flag == 'message':
+                jarvis_message = f"Message sent successfully to {name}"
+                pyperclip.copy(message)
+                pyautogui.hotkey('ctrl', 'v')
+                time.sleep(1)
+                pyautogui.press('enter')
+                speak(jarvis_message)
+
+            elif flag == 'call':
+                jarvis_message = f"Calling {name}"
+                speak(jarvis_message)
+                time.sleep(2)
+                pyautogui.click(x=1790, y=95)  # Adjust this to actual 📞 position
+
+            elif flag == 'video':
+                jarvis_message = f"Starting video call with {name}"
+                speak(jarvis_message)
+                time.sleep(2)
+                pyautogui.click(x=1730, y=95)  # Adjust this to 📹 button position
+
+        elif system_platform == "Darwin":  # macOS
+            # Open WhatsApp app on Mac
+            subprocess.Popen(["open", "-a", "WhatsApp"])
+            time.sleep(7)
+
+            # Click on Search bar (adjust this x, y based on your screen)
+            pyautogui.click(x=100, y=80)
+            time.sleep(1)
+
+            # Paste contact name
+            pyperclip.copy(name)
+            pyautogui.hotkey('command', 'v')
+            time.sleep(2)
+
+            # Click first result (adjust coordinates as needed)
+            pyautogui.click(x=150, y=200)
+            time.sleep(2)
+
+            if flag == 'message':
+                jarvis_message = f"Message sent successfully to {name}"
+                pyperclip.copy(message)
+                pyautogui.hotkey('command', 'v')
+                time.sleep(1)
+                pyautogui.press('enter')
+                speak(jarvis_message)
+
+            elif flag == 'call':
+                jarvis_message = f"Calling {name}"
+                speak(jarvis_message)
+                time.sleep(2)
+                pyautogui.click(x=1250, y=70)  # Voice call on mac (adjust as needed)
+
+            elif flag == 'video':
+                jarvis_message = f"Starting video call with {name}"
+                speak(jarvis_message)
+                time.sleep(2)
+                pyautogui.click(x=1200, y=70)  # Video call on mac (adjust as needed)
+
+        else:
+            speak("Unsupported OS for WhatsApp automation.")
 
     except Exception as e:
-        speak(f"Error sending WhatsApp: {str(e)}")
+        speak(f"Error interacting with WhatsApp: {str(e)}")

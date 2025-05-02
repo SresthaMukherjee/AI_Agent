@@ -6,7 +6,11 @@ import eel
 # Initialize TTS engine based on OS
 system_os = platform.system()
 if system_os == "Windows":
-    engine = pyttsx3.init("sapi5")
+    try:
+        engine = pyttsx3.init("sapi5")
+    except Exception:
+        print("sapi5 not available")
+        engine = pyttsx3.init()    
 elif system_os == "Darwin":
     engine = pyttsx3.init("nsss")
 else:
@@ -61,7 +65,7 @@ def takeAllCommands(message=None):
             return
 
         print(f"Processing: {query}")
-        #eel.senderText(query)
+        
 
         if "open" in query:
             from backend.feature import openCommand

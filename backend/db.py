@@ -42,7 +42,7 @@ cursor.execute(query)
 #         selected_data = [row[i] for i in desired_columns_indices]
 #         cursor.execute(''' INSERT INTO contacts (id, 'name', 'Phone') VALUES (null, ?,? );''', tuple(selected_data))
 
-# # Commit changes and close connection
+# Commit changes and close connection
 # conn.commit()
 # conn.close()
 # print("data inserted successfully...")
