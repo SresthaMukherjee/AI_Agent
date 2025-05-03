@@ -34,7 +34,7 @@ cursor.execute(query)
 
 
 
-# cursor.execute('''CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY, name VARCHAR(200), Phone VARCHAR(255), email VARCHAR(255) NULL)''') 
+#cursor.execute('''CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY, name VARCHAR(200), Phone VARCHAR(255), email VARCHAR(255) NULL)''') 
 # desired_columns_indices = [0, 18]
 # with open('contacts.csv', 'r', encoding='utf-8') as csvfile:
 #     csvreader = csv.reader(csvfile)
@@ -42,7 +42,7 @@ cursor.execute(query)
 #         selected_data = [row[i] for i in desired_columns_indices]
 #         cursor.execute(''' INSERT INTO contacts (id, 'name', 'Phone') VALUES (null, ?,? );''', tuple(selected_data))
 
-# Commit changes and close connection
+# #Commit changes and close connection
 # conn.commit()
 # conn.close()
 # print("data inserted successfully...")
