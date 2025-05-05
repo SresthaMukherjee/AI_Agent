@@ -1,6 +1,6 @@
 /* @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;300;400;500;600;700&display=swap"); */
 body {
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(2, 0, 1);
   overflow-y: hidden;
   overflow-x: hidden;
 }
@@ -181,33 +181,29 @@ body {
   
 
   .chat-canvas{
-    background-color: #191919
+    background-color: #d2e6f0
   }
-  
   .receiver_message{
     padding: 8px;
     border: 2px solid cyan;
     border-radius: 0px 15px 15px 20px;
     width: auto;
-    color: white;
+    color: rgb(34, 85, 152);
     background-color: #0dcaf014;
   }
   
   .sender_message{
     padding: 8px;
-    border: 1px solid #0045ff;
-    border-radius: 15px 15px 0px 20px;
+    border: 2px solid cyan;
+    border-radius: 0px 15px 15px 20px;
     width: auto;
-    color: white;
-    background-color: #0045ff;
+    color: rgb(34, 85, 152);
+    background-color: #0dcaf014;
   }
   .width-size{
     max-width: 80%;
     width: auto;
   }
-
-
-
   
 .svg-frame {
   position: relative;

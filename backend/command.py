@@ -1,91 +1,200 @@
-# import time
+# import pyttsx3
+# import speech_recognition as sr
+# import eel
+
+# def speak(text):
+#     text = str(text)
+#     engine = pyttsx3.init('sapi5')
+#     voices = engine.getProperty('voices')
+#     # print(voices)
+#     engine.setProperty('voice', voices[0].id)
+#     eel.DisplayMessage(text)
+#     engine.say(text)
+#     engine.runAndWait()
+#     engine.setProperty('rate', 174)
+#     eel.receiverText(text)
+    
+
+# def takecommand():
+#     r = sr.Recognizer()
+#     with sr.Microphone() as source:
+#         print("I'm listening...")
+#         eel.DisplayMessage("I'm listening...")
+#         r.pause_threshold = 1
+#         r.adjust_for_ambient_noise(source)
+#         audio = r.listen(source, 10, 8)
+
+#     try:
+#         print("Recognizing...")
+#         eel.DisplayMessage("Recognizing...")
+#         query = r.recognize_google(audio, language='en-US')
+#         print(f"User said: {query}\n")
+#         eel.DisplayMessage(query)
+#         speak(query)
+        
+#     except Exception as e:
+#         print(f"Error: {str(e)}\n")
+#         return None
+
+#     return query.lower()
+# @eel.expose
+# def takeAllCommands(message=None):
+#     if message is None:
+#         query = takecommand()  # If no message is passed, listen for voice input
+#         if not query:
+#             return  # Exit if no query is received
+#         print(query)
+#         eel.senderText(query)   
+#     else:
+#         query = message  # If there's a message, use it
+#         print(f"Message received: {query}")
+#         eel.senderText(query)
+#     try:
+#         if query:
+#             if "open" in query:
+#                 from backend.feature import openCommand
+#                 openCommand(query)
+#                 eel.ShowHood() 
+
+#             elif "send message" in query or "video call" in query or "call" in query:
+#                 from backend.feature import findContact, whatsApp
+#                 flag = ""
+#                 Phone, name = findContact(query)
+#                 if Phone != 0:
+                    # if "video call" in query:
+                    #     flag = 'video'
+                    # elif "send message" in query:
+                    #     flag = 'message'
+                    #     speak("What message to send?")
+                    #     message_content = takecommand()  # ✅ Use separate variable
+                    #     if not message_content: return  # ✅ Exit if failed
+                    # elif "call" in query:
+                    #     flag = 'call'
+                    # whatsApp(Phone, message_content, flag, name)
+                    
+#             elif "youtube" in query:
+#                 from backend.feature import playYoutube
+#                 playYoutube(query)
+#             else:
+#                 from backend.feature import chatBot
+#                 chatBot(query)
+#         else:
+#                 msg = "I'm not sure what to do..."
+#                 print(msg)
+#                 speak(msg)
+#                 eel.ShowHood()
+#     except Exception as e:
+#         print(f"An error occurred: {e}")
+#         speak("Sorry, something went wrong.")
+
+#         eel.ShowHood()
+
+
+
+import platform
 import pyttsx3
 import speech_recognition as sr
 import eel
 
+# Initialize TTS engine based on OS
+system_os = platform.system()
+if system_os == "Windows":
+    try:
+        engine = pyttsx3.init("sapi5")
+    except Exception:
+        print("sapi5 not available")
+        engine = pyttsx3.init()    
+elif system_os == "Darwin":
+    engine = pyttsx3.init("nsss")
+else:
+    engine = pyttsx3.init()  # Linux or fallback
+
+voices = engine.getProperty("voices")
+engine.setProperty("voice", voices[0].id)
+engine.setProperty("rate", 174)
+
+# Speak function with eel display
 def speak(text):
     text = str(text)
-    engine = pyttsx3.init('sapi5')
-    voices = engine.getProperty('voices')
-    # print(voices)
-    engine.setProperty('voice', voices[0].id)
     eel.DisplayMessage(text)
     engine.say(text)
     engine.runAndWait()
-    engine.setProperty('rate', 174)
-    eel.receiverText(text)
-    
-
+@eel.expose
+# Speech recognition function
 def takecommand():
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("I'm listening...")
-        eel.DisplayMessage("I'm listening...")
-        r.pause_threshold = 1
-        r.adjust_for_ambient_noise(source)
-        audio = r.listen(source, 10, 8)
-
+    recognizer = sr.Recognizer()
     try:
+        with sr.Microphone() as source:
+            print("I'm listening...")
+            eel.DisplayMessage("I'm listening...")
+            recognizer.pause_threshold = 1
+            recognizer.adjust_for_ambient_noise(source)
+            audio = recognizer.listen(source, timeout=10, phrase_time_limit=8)
+
         print("Recognizing...")
         eel.DisplayMessage("Recognizing...")
-        query = r.recognize_google(audio, language='en-US')
-        print(f"User said: {query}\n")
+        query = recognizer.recognize_google(audio, language='en-US')
+        print(f"User said: {query}")
         eel.DisplayMessage(query)
-        speak(query)
-        
-    except Exception as e:
-        print(f"Error: {str(e)}\n")
-        return None
+        return query.lower()
 
-    return query.lower()
+    except sr.WaitTimeoutError:
+        speak("I didn't hear anything.")
+    except sr.UnknownValueError:
+        speak("Sorry, I didn't catch that.")
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        speak("An error occurred while listening.")
+
+    return None
+
+# Main command processing function
 @eel.expose
 def takeAllCommands(message=None):
-    if message is None:
-        query = takecommand()  # If no message is passed, listen for voice input
-        if not query:
-            return  # Exit if no query is received
-        print(query)
-        eel.senderText(query)   
-    else:
-        query = message  # If there's a message, use it
-        print(f"Message received: {query}")
-        eel.senderText(query)
     try:
-        if query:
-            if "open" in query:
-                from backend.feature import openCommand
-                openCommand(query)
-                eel.ShowHood() 
+        query = message.lower() if message else takecommand()
+        if not query:
+            speak("I didn't catch that.")
+            return
 
-            elif "send message" in query or "video call" in query or "call" in query:
-                from backend.feature import findContact, whatsApp
-                flag = ""
-                Phone, name = findContact(query)
-                if Phone != 0:
-                    if "video call" in query:
-                        flag = 'video'
-                    elif "send message" in query:
-                        flag = 'message'
-                        speak("What message to send?")
-                        message_content = takecommand()  # ✅ Use separate variable
-                        if not message_content: return  # ✅ Exit if failed
-                    elif "call" in query:
-                        flag = 'call'
-                    whatsApp(Phone, message_content, flag, name)
-                    
-            elif "youtube" in query:
-                from backend.feature import playYoutube
-                playYoutube(query)
-            else:
-                from backend.feature import chatBot
-                chatBot(query)
+        print(f"Processing: {query}")
+        
+        
+        if "open" in query:
+            from backend.feature import openCommand
+            openCommand(query)
+
+        elif "send message" in query or "video call" in query or "call" in query:
+            from backend.feature import findContact, whatsApp
+            flag = ""
+            msg = ""
+
+            Phone, name = findContact(query)
+            if Phone != 0:
+                if "send message" in query:
+                    flag = "message"
+                    speak("What message do you want to send?")
+                    msg = takecommand()
+                elif "video call" in query:
+                    flag = "video"
+                elif "call" in query:
+                     flag = 'call'
+
+                if flag == "message" and not msg:
+                    speak("Message was not received. Cancelling.")
+                    return
+
+                whatsApp(Phone, msg, flag, name)
+
+        elif "youtube" in query:
+            from backend.feature import playYoutube
+            playYoutube(query)
+
         else:
-                msg = "I'm not sure what to do..."
-                print(msg)
-                speak(msg)
-                eel.ShowHood()
+            speak("I am not sure what to do with that command.")
+
     except Exception as e:
         print(f"An error occurred: {e}")
         speak("Sorry, something went wrong.")
-
+    finally:
         eel.ShowHood()

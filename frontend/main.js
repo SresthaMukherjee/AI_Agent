@@ -1,4 +1,6 @@
 $(document).ready(function () {
+
+  eel.init();
   // Animate header text
   $(".text").textillate({
     loop: true,

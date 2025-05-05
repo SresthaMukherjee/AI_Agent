@@ -5,8 +5,8 @@ import time
 import webbrowser
 import platform
 from shlex import quote
-
 import eel
+import hugchat
 import pvporcupine
 import pyaudio
 import pyautogui
@@ -27,7 +27,7 @@ pygame.mixer.init()
 
 @eel.expose
 def playAssistantSound():
-    sound_file = r"/Users/sukan/AI_Agent/frontend/assets/audio/frontend_assets_audio_start_sound.mp3"
+    sound_file = r"/Users/HP/AI_Agent/frontend/assets/audio/frontend_assets_audio_start_sound.mp3"
     pygame.mixer.music.load(sound_file)
     pygame.mixer.music.play()
 
@@ -223,3 +223,22 @@ def whatsApp(Phone, message, flag, name):
 
     except Exception as e:
         speak(f"Error interacting with WhatsApp: {str(e)}")
+def chatBot(query):
+    user_input = query.lower()
+    chatbot = hugchat.ChatBot(cookie_path=r"backend\cookie.json")
+    id = chatbot.new_conversation()
+    chatbot.change_conversation(id)
+    response =  chatbot.chat(user_input)
+    print(response)
+    speak(response)
+    return response
+
+# def chatBot(query):
+#     user_input=query.lower()
+#     chatBot=hugchat.ChatBot(compile_path="backend\cookie.json")
+#     id=chatBot.new_conversation()
+#     chatBot.change_conversation(id)
+#     response=chatBot.get_response(user_input)
+#     print(response)
+#     speak(response)
+#     return response
