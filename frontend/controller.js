@@ -1,12 +1,38 @@
 $(document).ready(function () {
 
-    // Expose DisplayMessage function to Python
+    // // Expose DisplayMessage function to Python
+    // eel.expose(DisplayMessage);
+    // function DisplayMessage(message) {
+    //     $(".siri-message li:first").text(message);
+    //     $(".siri-message").textillate("start"); // Animation trigger
+    // }
+    // eel.expose(DisplayMessage);
+    // function DisplayMessage(message) {
+    //     // Set message
+    //     $(".siri-message li:first").text(message);
+
+    //     // Initialize and trigger textillate animation if not initialized
+    //     if ($(".siri-message").length) {
+    //         $(".siri-message").textillate({ 
+    //             in: { effect: 'fadeInUp' }  // Add animation effect, can be customized
+    //         });
+    //         $(".siri-message").textillate("start"); // Animation trigger
+    //     }
+    // }
+
     eel.expose(DisplayMessage);
+
     function DisplayMessage(message) {
-        $(".siri-message li:first").text(message);
-        $(".siri-message").textillate("start"); // Animation trigger
-    }
-    
+    const $siriMessage = $(".siri-message");
+
+    // Update the message
+    $siriMessage.find("li:first").text(message);
+
+    // Restart the animation (Textillate needs to be re-triggered like this)
+    $siriMessage.textillate('out'); // Play exit animation first
+    $siriMessage.textillate('in');  // Then play entrance animation
+}
+
     // Expose ShowHood function to Python
     eel.expose(ShowHood);
     function ShowHood() {
@@ -26,6 +52,8 @@ $(document).ready(function () {
                     <div class="width-size">${message}</div>
                 </div>`;
             chatbox.scrollTop = chatbox.scrollHeight;
+            if (save) saveMessage("sender", message);
+
         }
     }
 
@@ -41,6 +69,8 @@ $(document).ready(function () {
                     </div>
                 </div>`;
             chatbox.scrollTop = chatbox.scrollHeight;
+            if (save) saveMessage("receiver", message);
+
         }
     }
 
@@ -71,7 +101,7 @@ $(document).ready(function () {
         $("#Start").fadeOut();
 
         setTimeout(function () {
-            $("#Oval").addClass("animate__animated animate__zoomIn");
+            $("#Oval").addClass("animate_animated animate_zoomIn");
         }, 1000);
 
         setTimeout(function () {
@@ -79,3 +109,4 @@ $(document).ready(function () {
         }, 1000);
     }
 });
+//controller.js
