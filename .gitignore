@@ -15,3 +15,5 @@ sherlock.db
 
 
 .vscode/
+
+.env
