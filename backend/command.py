@@ -191,7 +191,11 @@ def takeAllCommands(message=None):
             playYoutube(query)
 
         else:
-            speak("I am not sure what to do with that command.")
+            from backend.feature import chatBot
+            chatBot(query)
+
+        # else:
+        #     speak("I am not sure what to do with that command.")
 
     except Exception as e:
         print(f"An error occurred: {e}")

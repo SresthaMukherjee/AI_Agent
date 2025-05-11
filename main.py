@@ -1,12 +1,23 @@
 import os
 import platform
 import eel
+import datetime
 from backend.auth import recoganize
 from backend.auth.recoganize import AuthenticateFace
 from backend.feature import *
 from backend.command import *
 
 eel.init("frontend")
+
+def get_greeting():
+    """Return appropriate greeting based on time of day"""
+    hour = datetime.datetime.now().hour
+    if 5 <= hour < 12:
+        return "Good Morning"
+    elif 12 <= hour < 17:
+        return "Good Afternoon"
+    else:
+        return "Good Evening"
 
 playAssistantSound()
 

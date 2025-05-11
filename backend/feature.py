@@ -14,9 +14,15 @@ import pywhatkit as kit
 import pygame
 import sqlite3
 import pyperclip
+import google.generativeai as genai
 from backend.command import speak
 from backend.config import ASSISTANT_NAME
 from backend.helper import extract_yt_term, remove_words
+from dotenv import load_dotenv
+
+# Load Gemini API key from .env
+load_dotenv()
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # SQLite Connection
 conn = sqlite3.connect("sherlock.db")
@@ -223,15 +229,58 @@ def whatsApp(Phone, message, flag, name):
 
     except Exception as e:
         speak(f"Error interacting with WhatsApp: {str(e)}")
+
+
+def gemini_chatbot(prompt):
+    try:
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        chat = model.start_chat(history=[])
+        response = chat.send_message(prompt)
+
+        # Clean up the response to remove asterisks
+        response_text = response.text.strip()
+        response_text = response_text.replace('*', '')  # Remove the asterisks
+        return response.text.strip()
+    except Exception as e:
+        return f"Gemini Error: {str(e)}"
+
+@eel.expose
 def chatBot(query):
-    user_input = query.lower()
-    chatbot = hugchat.ChatBot(cookie_path=r"backend\cookie.json")
-    id = chatbot.new_conversation()
-    chatbot.change_conversation(id)
-    response =  chatbot.chat(user_input)
-    print(response)
-    speak(response)
-    return response
+    try:
+        response = gemini_chatbot(query)
+        print(f"Gemini: {response}")
+        speak(response)
+        eel.DisplayMessage("Sherlock", response)
+    except Exception as e:
+        print(f"Gemini ChatBot Error: {e}")
+        speak("Sorry, I couldn't answer that.")
+
+
+# def chatBot(query):
+#     try:
+#         openai.api_key = os.getenv("OPENAI_API_KEY") or "your-api-key-here"
+
+#         prompt = f"""You are Sherlock, a smart assistant. Answer the following question accurately and clearly.
+# Question: {query}
+# Answer:"""
+
+#         response = openai.ChatCompletion.create(
+#             model="gpt-4",  # use "gpt-3.5-turbo" if GPT-4 is not available
+#             messages=[{"role": "user", "content": prompt}],
+#             temperature=0.5,
+#             max_tokens=300
+#         )
+
+#         answer = response['choices'][0]['message']['content'].strip()
+#         print(f"Bot: {answer}")
+#         speak(answer)
+#         eel.DisplayMessage("Sherlock", answer)
+
+#     except Exception as e:
+#         print(f"Chatbot Error: {e}")
+#         speak("Sorry, I couldn't answer that.")
+
+
 
 # def chatBot(query):
 #     user_input=query.lower()
