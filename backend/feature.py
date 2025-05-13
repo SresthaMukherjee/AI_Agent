@@ -6,6 +6,7 @@ import webbrowser
 import platform
 from shlex import quote
 import eel
+import re
 import hugchat
 import pvporcupine
 import pyaudio
@@ -23,6 +24,17 @@ from dotenv import load_dotenv
 # Load Gemini API key from .env
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+def clean_markdown(text):
+    # Remove bold and italic markdown (**text**, *text*, _text_, etc.)
+    text = re.sub(r'(\*{1,2}|_{1,2})(.*?)\1', r'\2', text)
+    # Remove inline code (e.g., `code`)
+    text = re.sub(r'`(.*?)`', r'\1', text)
+    # Remove markdown headers (e.g., # Header)
+    text = re.sub(r'^#+\s*', '', text, flags=re.MULTILINE)
+    # Remove remaining asterisks or undesired symbols
+    text = text.replace('*', '')
+    return text.strip()
 
 # SQLite Connection
 conn = sqlite3.connect("sherlock.db")
@@ -236,11 +248,8 @@ def gemini_chatbot(prompt):
         model = genai.GenerativeModel('gemini-2.0-flash')
         chat = model.start_chat(history=[])
         response = chat.send_message(prompt)
-
-        # Clean up the response to remove asterisks
-        response_text = response.text.strip()
-        response_text = response_text.replace('*', '')  # Remove the asterisks
-        return response.text.strip()
+        response_text = clean_markdown(response.text.strip())
+        return response_text
     except Exception as e:
         return f"Gemini Error: {str(e)}"
 
@@ -254,40 +263,3 @@ def chatBot(query):
     except Exception as e:
         print(f"Gemini ChatBot Error: {e}")
         speak("Sorry, I couldn't answer that.")
-
-
-# def chatBot(query):
-#     try:
-#         openai.api_key = os.getenv("OPENAI_API_KEY") or "your-api-key-here"
-
-#         prompt = f"""You are Sherlock, a smart assistant. Answer the following question accurately and clearly.
-# Question: {query}
-# Answer:"""
-
-#         response = openai.ChatCompletion.create(
-#             model="gpt-4",  # use "gpt-3.5-turbo" if GPT-4 is not available
-#             messages=[{"role": "user", "content": prompt}],
-#             temperature=0.5,
-#             max_tokens=300
-#         )
-
-#         answer = response['choices'][0]['message']['content'].strip()
-#         print(f"Bot: {answer}")
-#         speak(answer)
-#         eel.DisplayMessage("Sherlock", answer)
-
-#     except Exception as e:
-#         print(f"Chatbot Error: {e}")
-#         speak("Sorry, I couldn't answer that.")
-
-
-
-# def chatBot(query):
-#     user_input=query.lower()
-#     chatBot=hugchat.ChatBot(compile_path="backend\cookie.json")
-#     id=chatBot.new_conversation()
-#     chatBot.change_conversation(id)
-#     response=chatBot.get_response(user_input)
-#     print(response)
-#     speak(response)
-#     return response
