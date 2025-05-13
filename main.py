@@ -24,7 +24,7 @@ playAssistantSound()
 @eel.expose
 def init():
     eel.hideLoader()
-    speak("Welcome to Jarvis")
+    speak("Welcome to Sherlock")
     speak("Ready for Face Authentication")
     flag = recoganize.AuthenticateFace()
     if flag ==1:
