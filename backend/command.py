@@ -26,6 +26,7 @@ def speak(text):
     eel.DisplayMessage(text)
     engine.say(text)
     engine.runAndWait()
+    eel.receiverText(text)
 @eel.expose
 # Speech recognition function
 def takecommand():
@@ -65,7 +66,7 @@ def takeAllCommands(message=None):
             return
 
         print(f"Processing: {query}")
-        
+        eel.senderText(query)
         
         if "open" in query:
             from backend.feature import openCommand

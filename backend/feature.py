@@ -13,9 +13,12 @@ import pyaudio
 import pyautogui
 import pywhatkit as kit
 import pygame
+import platform
 import sqlite3
 import pyperclip
 import google.generativeai as genai
+import keyboard
+import threading
 from backend.command import speak
 from backend.config import ASSISTANT_NAME
 from backend.helper import extract_yt_term, remove_words
@@ -26,10 +29,10 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 def clean_markdown(text):
-    # Remove bold and italic markdown (**text**, *text*, _text_, etc.)
-    text = re.sub(r'(\*{1,2}|_{1,2})(.*?)\1', r'\2', text)
-    # Remove inline code (e.g., `code`)
-    text = re.sub(r'`(.*?)`', r'\1', text)
+    # Remove bold and italic markdown (*text, *text, text, etc.)
+    text = re.sub(r'(\{1,2}|_{1,2})(.?)\1', r'\2', text)
+    # Remove inline code (e.g., code)
+    text = re.sub(r'(.*?)', r'\1', text)
     # Remove markdown headers (e.g., # Header)
     text = re.sub(r'^#+\s*', '', text, flags=re.MULTILINE)
     # Remove remaining asterisks or undesired symbols
@@ -243,15 +246,89 @@ def whatsApp(Phone, message, flag, name):
         speak(f"Error interacting with WhatsApp: {str(e)}")
 
 
+# def gemini_chatbot(prompt):
+#     try:
+#         model = genai.GenerativeModel('gemini-2.0-flash')
+#         chat = model.start_chat(history=[])
+#         response = chat.send_message(prompt)
+#         response_text = clean_markdown(response.text.strip())
+#         return response_text
+#     except Exception as e:
+#         return f"Gemini Error: {str(e)}"
+
+
 def gemini_chatbot(prompt):
     try:
+        # Set word limit based on keywords in the prompt
+        lowered_prompt = prompt.lower()
+        if "brief" in lowered_prompt or "short" in lowered_prompt:
+            max_words = 50
+        else:
+            max_words = 150
+
+        # Generate response using Gemini
         model = genai.GenerativeModel('gemini-2.0-flash')
         chat = model.start_chat(history=[])
         response = chat.send_message(prompt)
         response_text = clean_markdown(response.text.strip())
+
+        # Truncate if too long
+        words = response_text.split()
+        if len(words) > max_words:
+            response_text = ' '.join(words[:max_words]) + " ..."
+
         return response_text
+
     except Exception as e:
         return f"Gemini Error: {str(e)}"
+
+
+
+# For Windows/Linux
+import threading
+
+
+system_os = platform.system()
+
+def monitor_escape_key():
+    if system_os == "Windows":
+        import keyboard
+
+        def on_escape():
+            stop_speaking()
+            print("[INFO] Ctrl+E pressed. Speaking stopped.")
+
+        keyboard.add_hotkey('ctrl+e', on_escape)
+        keyboard.wait()
+
+    elif system_os == "Darwin":
+        # macOS alternative using pynput
+        from pynput import keyboard as pynput_keyboard
+
+        def on_press(key):
+            try:
+                if key == pynput_keyboard.KeyCode.from_char('e') and current_keys.get('ctrl'):
+                    stop_speaking()
+                    print("[INFO] Ctrl+E pressed. Speaking stopped.")
+            except Exception as e:
+                print(f"[ERROR] Hotkey detection failed: {e}")
+
+        def on_release(key):
+            try:
+                if key == pynput_keyboard.Key.ctrl_l or key == pynput_keyboard.Key.ctrl_r:
+                    current_keys['ctrl'] = False
+            except:
+                pass
+
+        def on_key_press(key):
+            if key == pynput_keyboard.Key.ctrl_l or key == pynput_keyboard.Key.ctrl_r:
+                current_keys['ctrl'] = True
+            on_press(key)
+
+        current_keys = {'ctrl': False}
+        with pynput_keyboard.Listener(on_press=on_key_press, on_release=on_release) as listener:
+            listener.join()
+
 
 @eel.expose
 def chatBot(query):

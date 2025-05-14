@@ -49,7 +49,9 @@ $(document).ready(function () {
         if (message.trim() !== "") {
             chatbox.innerHTML += `
                 <div class="row justify-content-end mb-4">
-                    <div class="width-size">${message}</div>
+                    <div class="width-size">
+                        <div class="sender_message">${message}</div>
+                    </div>
                 </div>`;
             chatbox.scrollTop = chatbox.scrollHeight;
             if (save) saveMessage("sender", message);
