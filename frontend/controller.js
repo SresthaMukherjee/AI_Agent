@@ -1,25 +1,4 @@
 $(document).ready(function () {
-
-    // // Expose DisplayMessage function to Python
-    // eel.expose(DisplayMessage);
-    // function DisplayMessage(message) {
-    //     $(".siri-message li:first").text(message);
-    //     $(".siri-message").textillate("start"); // Animation trigger
-    // }
-    // eel.expose(DisplayMessage);
-    // function DisplayMessage(message) {
-    //     // Set message
-    //     $(".siri-message li:first").text(message);
-
-    //     // Initialize and trigger textillate animation if not initialized
-    //     if ($(".siri-message").length) {
-    //         $(".siri-message").textillate({ 
-    //             in: { effect: 'fadeInUp' }  // Add animation effect, can be customized
-    //         });
-    //         $(".siri-message").textillate("start"); // Animation trigger
-    //     }
-    // }
-
     eel.expose(DisplayMessage);
 
     function DisplayMessage(message) {
@@ -111,4 +90,3 @@ $(document).ready(function () {
         }, 1000);
     }
 });
-//controller.js

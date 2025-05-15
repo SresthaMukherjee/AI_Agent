@@ -10,27 +10,13 @@ from backend.command import *
 
 # Initialize the frontend directory for Eel
 eel.init("frontend")
-
-def get_greeting():
-    """Return appropriate greeting based on time of day."""
-    hour = datetime.datetime.now().hour
-    if 5 <= hour < 12:
-        return "Good Morning"
-    elif 12 <= hour < 17:
-        return "Good Afternoon"
-    else:
-        return "Good Evening"
-
 # ✅ Play assistant start sound
 playAssistantSound()
 
 @eel.expose
 def init():
     eel.hideLoader()
-
-    # ✅ Greet the user based on time
-    greeting = get_greeting()
-    speak(f"{greeting}, initializing authentication...")
+    speak("welcome to Sherlock")
 
     speak("Ready for Face Authentication")
     is_authenticated = recoganize.AuthenticateFace()

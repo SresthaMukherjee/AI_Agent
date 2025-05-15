@@ -27,6 +27,8 @@ from dotenv import load_dotenv
 # Load Gemini API key from .env
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel('gemini-2.0-flash')
+chat = model.start_chat(history=[])
 
 def clean_markdown(text):
     # Remove bold and italic markdown (*text, *text, text, etc.)
@@ -53,7 +55,17 @@ def playAssistantSound():
     pygame.mixer.music.play()
 
 def openCommand(query):
-    query = query.replace(ASSISTANT_NAME, "").replace("open", "").strip().lower()
+    query = query.lower()
+    query = query.replace(ASSISTANT_NAME, "")
+
+    # Clean filler words like "please", "quickly", etc.
+    fillers = ["please", "can you", "would you", "kindly", "quickly", "just", "hey"]
+    for word in fillers:
+        query = query.replace(word, "")
+
+    # Remove the word "open"
+    query = query.replace("open", "").strip()
+
     app_name = query
 
     if not app_name:
@@ -90,6 +102,7 @@ def openCommand(query):
 
     except Exception as e:
         speak(f"Something went wrong: {str(e)}")
+
 
 def playYoutube(query):
     search_term = extract_yt_term(query)
@@ -136,7 +149,7 @@ def hotword():
             paud.terminate()
 
 def findContact(query):
-    words_to_remove = [ASSISTANT_NAME, 'make', 'a', 'to', 'phone', 'call', 'send', 'message', 'wahtsapp', 'video']
+    words_to_remove = [ASSISTANT_NAME, 'make', 'a', 'to', 'phone', 'call', 'send', 'message', 'wsapp', 'video']
     query = remove_words(query, words_to_remove).strip().lower()
 
     try:
@@ -159,6 +172,7 @@ def findContact(query):
 def whatsApp(Phone, message, flag, name):
     system_platform = platform.system()
     
+
     try:
         if system_platform == "Windows":
             # Open WhatsApp UWP Desktop
@@ -248,95 +262,70 @@ def whatsApp(Phone, message, flag, name):
 
 # def gemini_chatbot(prompt):
 #     try:
-#         model = genai.GenerativeModel('gemini-2.0-flash')
-#         chat = model.start_chat(history=[])
 #         response = chat.send_message(prompt)
 #         response_text = clean_markdown(response.text.strip())
 #         return response_text
 #     except Exception as e:
 #         return f"Gemini Error: {str(e)}"
 
-
 def gemini_chatbot(prompt):
     try:
-        # Set word limit based on keywords in the prompt
-        lowered_prompt = prompt.lower()
-        if "brief" in lowered_prompt or "short" in lowered_prompt:
-            max_words = 50
-        else:
-            max_words = 150
+        start = time.time()
 
-        # Generate response using Gemini
-        model = genai.GenerativeModel('gemini-2.0-flash')
-        chat = model.start_chat(history=[])
         response = chat.send_message(prompt)
+
+        end = time.time()
+        print(f"Gemini response time: {end - start:.2f} seconds")
+
         response_text = clean_markdown(response.text.strip())
 
-        # Truncate if too long
-        words = response_text.split()
-        if len(words) > max_words:
-            response_text = ' '.join(words[:max_words]) + " ..."
-
+        print(f"Gemini: {response_text}")
         return response_text
 
     except Exception as e:
         return f"Gemini Error: {str(e)}"
 
+# @eel.expose
+# def chatBot(query):
+#     try:
+#         eel.DisplayMessage(query)  # Show user's question once
+#         response = gemini_chatbot(query)
+#         print(f"Gemini: {response}")
 
+#         eel.DisplayMessage("Sherlock", response)  # Show assistant's response once
 
-# For Windows/Linux
-import threading
+#         # Speak only if word count is <= 50
+#         if len(response.split()) <= 50:
+#             speak(response)
 
-
-system_os = platform.system()
-
-def monitor_escape_key():
-    if system_os == "Windows":
-        import keyboard
-
-        def on_escape():
-            stop_speaking()
-            print("[INFO] Ctrl+E pressed. Speaking stopped.")
-
-        keyboard.add_hotkey('ctrl+e', on_escape)
-        keyboard.wait()
-
-    elif system_os == "Darwin":
-        # macOS alternative using pynput
-        from pynput import keyboard as pynput_keyboard
-
-        def on_press(key):
-            try:
-                if key == pynput_keyboard.KeyCode.from_char('e') and current_keys.get('ctrl'):
-                    stop_speaking()
-                    print("[INFO] Ctrl+E pressed. Speaking stopped.")
-            except Exception as e:
-                print(f"[ERROR] Hotkey detection failed: {e}")
-
-        def on_release(key):
-            try:
-                if key == pynput_keyboard.Key.ctrl_l or key == pynput_keyboard.Key.ctrl_r:
-                    current_keys['ctrl'] = False
-            except:
-                pass
-
-        def on_key_press(key):
-            if key == pynput_keyboard.Key.ctrl_l or key == pynput_keyboard.Key.ctrl_r:
-                current_keys['ctrl'] = True
-            on_press(key)
-
-        current_keys = {'ctrl': False}
-        with pynput_keyboard.Listener(on_press=on_key_press, on_release=on_release) as listener:
-            listener.join()
-
+#     except Exception as e:
+#         print(f"Gemini ChatBot Error: {e}")
+#         speak("Sorry, I couldn't answer that.")
 
 @eel.expose
 def chatBot(query):
     try:
+        eel.DisplayMessage(query)  # Show user's question once
         response = gemini_chatbot(query)
         print(f"Gemini: {response}")
-        speak(response)
-        eel.DisplayMessage("Sherlock", response)
+
+        words = response.split()
+        word_count = len(words)
+
+        # Condition-wise handling
+        if word_count <= 50:
+            eel.DisplayMessage(response)
+            speak(response)
+
+        elif word_count <= 150:
+            eel.DisplayMessage(response)
+            time.sleep(30)
+
+        else:
+            trimmed = ' '.join(words[:150]) + "..."
+            eel.DisplayMessage(trimmed)
+            
+
     except Exception as e:
         print(f"Gemini ChatBot Error: {e}")
         speak("Sorry, I couldn't answer that.")
