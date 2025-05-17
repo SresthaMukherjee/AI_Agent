@@ -31,6 +31,11 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel('gemini-2.0-flash')
 chat = model.start_chat(history=[])
 
+if platform.system() == "Windows":
+    ACCESS_KEY = os.getenv("PICOVOICE_ACCESS_KEY_WINDOWS")
+else:
+    ACCESS_KEY = os.getenv("PICOVOICE_ACCESS_KEY_MAC")
+
 def clean_markdown(text):
     # Remove bold and italic markdown (*text, *text, text, etc.)
     text = re.sub(r'(\{1,2}|_{1,2})(.?)\1', r'\2', text)
@@ -111,10 +116,6 @@ def playYoutube(query):
     kit.playonyt(search_term)
 
 def hotword():
-
-    load_dotenv()  # load .env variables
-     
-    ACCESS_KEY = os.getenv("PICOVOICE_ACCESS_KEY")
     
     # Project root folder (this file's directory)
     project_root = Path(__file__).parent
@@ -156,8 +157,10 @@ def hotword():
                     time.sleep(2)
                     pyautogui.keyUp("win")
                 else:
-                    # Placeholder for macOS/Linux shortcut handling
-                    print("Triggering hotword action on non-Windows OS")
+                    pyautogui.keyDown('command')
+                    pyautogui.press('j')
+                    time.sleep(2)
+                    pyautogui.keyUp('command')
 
     except Exception as e:
         print("Error in hotword detection:", e)
@@ -279,15 +282,6 @@ def whatsApp(Phone, message, flag, name):
 
     except Exception as e:
         speak(f"Error interacting with WhatsApp: {str(e)}")
-
-
-# def gemini_chatbot(prompt):
-#     try:
-#         response = chat.send_message(prompt)
-#         response_text = clean_markdown(response.text.strip())
-#         return response_text
-#     except Exception as e:
-#         return f"Gemini Error: {str(e)}"
 
 def gemini_chatbot(prompt):
     try:
