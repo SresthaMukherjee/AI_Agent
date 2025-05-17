@@ -63,7 +63,7 @@ def takeAllCommands(message=None):
         query = message.lower() if message else takecommand()
         if not query:
             speak("I didn't catch that.")
-            return
+            return "no_query" #✅ Return a fallback response
 
         print(f"Processing: {query}")
         eel.senderText(query)
@@ -90,7 +90,7 @@ def takeAllCommands(message=None):
 
                 if flag == "message" and not msg:
                     speak("Message was not received. Cancelling.")
-                    return
+                    return "message_cancelled"  # ✅ Added return
 
                 whatsApp(Phone, msg, flag, name)
 
@@ -101,12 +101,11 @@ def takeAllCommands(message=None):
         else:
             from backend.feature import chatBot
             chatBot(query)
-
-        # else:
-        #     speak("I am not sure what to do with that command.")
+        return "success"  # ✅ Always return something if no exception
 
     except Exception as e:
         print(f"An error occurred: {e}")
         speak("Sorry, something went wrong.")
+        return "error"  # ✅ Handle error case
     finally:
         eel.ShowHood()

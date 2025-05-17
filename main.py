@@ -16,7 +16,7 @@ playAssistantSound()
 @eel.expose
 def init():
     eel.hideLoader()
-    speak("welcome to Sherlock")
+    speak("Welcome to Sherlock")
 
     speak("Ready for Face Authentication")
     is_authenticated = recoganize.AuthenticateFace()
@@ -25,7 +25,7 @@ def init():
         speak("Face recognized successfully")
         eel.hideFaceAuth()
         eel.hideFaceAuthSuccess()
-        speak("Welcome to your assistant")  # 🔁 This is where you might be hearing "Welcome to Jarvis"
+        speak("Welcome to your assistant")  # 🔁 This is where you might be hearing "Welcome to Sherlock"
         eel.hideStart()
         playAssistantSound()
     else:

@@ -19,6 +19,7 @@ import pyperclip
 import google.generativeai as genai
 import keyboard
 import threading
+from pathlib import Path
 from backend.command import speak
 from backend.config import ASSISTANT_NAME
 from backend.helper import extract_yt_term, remove_words
@@ -110,19 +111,39 @@ def playYoutube(query):
     kit.playonyt(search_term)
 
 def hotword():
+
+    load_dotenv()  # load .env variables
+     
+    ACCESS_KEY = os.getenv("PICOVOICE_ACCESS_KEY")
+    
+    # Project root folder (this file's directory)
+    project_root = Path(__file__).parent
+    # Choose the right keyword file based on OS
+    if platform.system() == "Windows":
+        keyword_file = project_root / "hotwords" / "sherlock_windows.ppn"
+    else:
+        keyword_file = project_root / "hotwords" / "sherlock_mac.ppn"
+
+    # Convert Path object to string path
+    keyword_path_str = str(keyword_file.resolve())
+    print(f"Loaded hotword keyword file: {keyword_path_str}")
     porcupine = None
     paud = None
     audio_stream = None
 
     try:
-        porcupine = pvporcupine.create(keywords=["jarvis", "alexa"])
+        # Use your custom keyword file with access key
+        porcupine = pvporcupine.create(
+            access_key=ACCESS_KEY,
+            keyword_paths=[keyword_path_str]
+        )
         paud = pyaudio.PyAudio()
         audio_stream = paud.open(rate=porcupine.sample_rate, channels=1,
                                  format=pyaudio.paInt16, input=True,
                                  frames_per_buffer=porcupine.frame_length)
 
         while True:
-            keyword = audio_stream.read(porcupine.frame_length)
+            keyword = audio_stream.read(porcupine.frame_length, exception_on_overflow=False)
             keyword = struct.unpack_from("h" * porcupine.frame_length, keyword)
             keyword_index = porcupine.process(keyword)
 
@@ -196,22 +217,22 @@ def whatsApp(Phone, message, flag, name):
             time.sleep(2)
 
             if flag == 'message':
-                jarvis_message = f"Message sent successfully to {name}"
+                sherlock_message = f"Message sent successfully to {name}"
                 pyperclip.copy(message)
                 pyautogui.hotkey('ctrl', 'v')
                 time.sleep(1)
                 pyautogui.press('enter')
-                speak(jarvis_message)
+                speak(sherlock_message)
 
             elif flag == 'call':
-                jarvis_message = f"Calling {name}"
-                speak(jarvis_message)
+                sherlock_message = f"Calling {name}"
+                speak(sherlock_message)
                 time.sleep(2)
                 pyautogui.click(x=1790, y=95)  # Adjust this to actual 📞 position
 
             elif flag == 'video':
-                jarvis_message = f"Starting video call with {name}"
-                speak(jarvis_message)
+                sherlock_message = f"Starting video call with {name}"
+                speak(sherlock_message)
                 time.sleep(2)
                 pyautogui.click(x=1730, y=95)  # Adjust this to 📹 button position
 
@@ -234,22 +255,22 @@ def whatsApp(Phone, message, flag, name):
             time.sleep(2)
 
             if flag == 'message':
-                jarvis_message = f"Message sent successfully to {name}"
+                sherlock_message = f"Message sent successfully to {name}"
                 pyperclip.copy(message)
                 pyautogui.hotkey('command', 'v')
                 time.sleep(1)
                 pyautogui.press('enter')
-                speak(jarvis_message)
+                speak(sherlock_message)
 
             elif flag == 'call':
-                jarvis_message = f"Calling {name}"
-                speak(jarvis_message)
+                sherlock_message = f"Calling {name}"
+                speak(sherlock_message)
                 time.sleep(2)
                 pyautogui.click(x=1250, y=70)  # Voice call on mac (adjust as needed)
 
             elif flag == 'video':
-                jarvis_message = f"Starting video call with {name}"
-                speak(jarvis_message)
+                sherlock_message = f"Starting video call with {name}"
+                speak(sherlock_message)
                 time.sleep(2)
                 pyautogui.click(x=1200, y=70)  # Video call on mac (adjust as needed)
 
