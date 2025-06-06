@@ -17,3 +17,5 @@ sherlock.db
 .vscode/
 
 .env
+
+backend/hotwords/*.ppn
