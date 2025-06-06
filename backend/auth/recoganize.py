@@ -2,6 +2,9 @@ import time
 import cv2
 import pyautogui as p
 import os  # For handling cross-platform paths
+import numpy as np
+
+
 
 def AuthenticateFace():
 
@@ -45,7 +48,7 @@ def AuthenticateFace():
             minNeighbors=5,
             minSize=(int(minW), int(minH)),
         )
-
+        
         for (x, y, w, h) in faces:
             # Draw a rectangle around the detected face
             cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -53,14 +56,25 @@ def AuthenticateFace():
             # Predict on the face region
             id, accuracy = recognizer.predict(converted_image[y:y + h, x:x + w])
 
-            if accuracy < 100:
-                id = names[id]
-                accuracy = "  {0}%".format(round(100 - accuracy))
-                flag = 1
-            else:
-                id = "unknown"
-                accuracy = "  {0}%".format(round(100 - accuracy))
-                flag = 0
+            # if accuracy < 100:
+            #     id = names[id]
+            #     accuracy = "  {0}%".format(round(100 - accuracy))
+            #     flag = 1
+            # else:
+            #     id = "unknown"
+            #     accuracy = "  {0}%".format(round(100 - accuracy))
+            #     flag = 0
+        confidence = 100 - accuracy  # Calculate confidence percentage
+        
+
+        if confidence >= 30:  # Only accept if confidence is 70% or more
+            id = names[id]
+            accuracy = "  {0}%".format(round(confidence))
+            flag = 1
+        else:
+            id = "unknown"
+            accuracy = "  {0}%".format(round(confidence))
+            flag = 0
 
             cv2.putText(img, str(id), (x + 5, y - 5), font, 1, (255, 255, 255), 2)
             cv2.putText(img, str(accuracy), (x + 5, y + h - 5),
@@ -74,7 +88,7 @@ def AuthenticateFace():
             break
         if flag == 1:
             break
-
+  
     # Cleanup after exit
     cam.release()
     cv2.destroyAllWindows()
