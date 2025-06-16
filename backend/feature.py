@@ -18,9 +18,8 @@ import sqlite3
 import pyperclip
 import google.generativeai as genai
 import keyboard
-import threading
 from pathlib import Path
-from backend.command import speak
+from backend.command import speak, takeAllCommands
 from backend.config import ASSISTANT_NAME
 from backend.helper import extract_yt_term, remove_words
 from dotenv import load_dotenv
@@ -64,12 +63,10 @@ def openCommand(query):
     query = query.lower()
     query = query.replace(ASSISTANT_NAME, "")
 
-    # Clean filler words like "please", "quickly", etc.
+    # Remove filler words
     fillers = ["please", "can you", "would you", "kindly", "quickly", "just", "hey"]
     for word in fillers:
         query = query.replace(word, "")
-
-    # Remove the word "open"
     query = query.replace("open", "").strip()
 
     app_name = query
@@ -78,37 +75,45 @@ def openCommand(query):
         return
 
     try:
-        cursor.execute('SELECT path FROM sys_command WHERE name IN (?)', (app_name,))
-        results = cursor.fetchall()
-
-        if results:
-            speak("Opening " + app_name)
-            path = results[0][0]
+        # 1. Local app from DB
+        cursor.execute('SELECT path FROM sys_command WHERE name = ?', (app_name,))
+        result = cursor.fetchone()
+        if result:
+            speak(f"Opening {app_name}")
+            path = result[0]
             if platform.system() == "Windows":
                 os.startfile(path)
             elif platform.system() == "Darwin":
-                os.system(f'open "{path}"')
+                subprocess.call(["open", path])
             else:
-                os.system(f'xdg-open "{path}"')
-        else:
-            cursor.execute('SELECT url FROM web_command WHERE name IN (?)', (app_name,))
-            results = cursor.fetchall()
+                subprocess.call(["xdg-open", path])
+            return
 
-            if results:
-                speak("Opening " + app_name)
-                webbrowser.open(results[0][0])
-            else:
-                speak("Opening " + app_name)
-                if platform.system() == "Windows":
-                    os.system(f'start {app_name}')
-                elif platform.system() == "Darwin":
-                    os.system(f'open -a "{app_name}"')
-                else:
-                    os.system(f'xdg-open "{app_name}"')
+        # 2. Web app from DB
+        cursor.execute('SELECT url FROM web_command WHERE name = ?', (app_name,))
+        result = cursor.fetchone()
+        if result:
+            speak(f"Opening {app_name}")
+            webbrowser.open(result[0])
+            return
+
+        # 3. Try opening system app (like Safari, Calculator)
+        speak(f"Trying to open {app_name}")
+        system_opened = False
+        if platform.system() == "Windows":
+            system_opened = subprocess.call(f'start {app_name}', shell=True) == 0
+        elif platform.system() == "Darwin":
+            system_opened = subprocess.call(['open', '-a', app_name]) == 0
+        else:
+            system_opened = subprocess.call(['xdg-open', app_name]) == 0
+
+        # 4. If system open fails, fallback to web
+        if not system_opened:
+            speak(f"Opening {app_name} website")
+            webbrowser.open(f"https://{app_name}.com")
 
     except Exception as e:
         speak(f"Something went wrong: {str(e)}")
-
 
 def playYoutube(query):
     search_term = extract_yt_term(query)
@@ -157,10 +162,8 @@ def hotword():
                     time.sleep(2)
                     pyautogui.keyUp("win")
                 else:
-                    pyautogui.keyDown('command')
-                    pyautogui.press('j')
-                    time.sleep(2)
-                    pyautogui.keyUp('command')
+                    # On macOS, directly trigger the assistant
+                    takeAllCommands()
 
     except Exception as e:
         print("Error in hotword detection:", e)
@@ -216,7 +219,7 @@ def whatsApp(Phone, message, flag, name):
             time.sleep(2)
 
             # Click on first result — Adjust coordinates as needed
-            pyautogui.click(x=250, y=260)
+            pyautogui.click(x=100, y=80)
             time.sleep(2)
 
             if flag == 'message':
@@ -269,13 +272,13 @@ def whatsApp(Phone, message, flag, name):
                 sherlock_message = f"Calling {name}"
                 speak(sherlock_message)
                 time.sleep(2)
-                pyautogui.click(x=1250, y=70)  # Voice call on mac (adjust as needed)
+                pyautogui.click(x=1225, y=70)  # Voice call on mac (adjust as needed)
 
             elif flag == 'video':
                 sherlock_message = f"Starting video call with {name}"
                 speak(sherlock_message)
                 time.sleep(2)
-                pyautogui.click(x=1200, y=70)  # Video call on mac (adjust as needed)
+                pyautogui.click(x=1175, y=70)  # Video call on mac (adjust as needed)
 
         else:
             speak("Unsupported OS for WhatsApp automation.")
