@@ -1,0 +1,14 @@
+Tech Stack: Python | Pyttsx3 | SpeechRecognition | OpenAI | Picovoice | Web APIs
+
+Description:
+AI Agent is a smart desktop assistant designed to execute voice commands and perform real-time tasks using artificial intelligence and NLP capabilities. It combines speech recognition, text-to-speech, and OpenAI’s GPT for intelligent conversations and task execution.
+
+Key Features:
+	•	🗣️ Voice Recognition: Uses Picovoice and SpeechRecognition libraries to capture and interpret user commands.
+	•	🧠 Conversational Intelligence: Integrates OpenAI API for context-aware, natural-sounding responses.
+	•	🎤 Text-to-Speech: Implements Pyttsx3 for vocal feedback and accessibility.
+	•	🌐 Web Automation: Can open websites, search queries, fetch weather/news, and more.
+	•	💡 Custom Commands: Triggers for system operations like opening files, apps, or running scripts.
+
+Purpose:
+This project showcases real-world AI and voice technology integration into desktop applications. Ideal for demonstrating automation, Python scripting, and NLP implementation skills.
